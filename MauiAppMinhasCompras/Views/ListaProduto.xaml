@@ -17,11 +17,11 @@
                    Placeholder="Busca de Produtos"
                    TextChanged="txt_search_TextChanged"/>
 
-        <ListView x:Name="lst_produtos">
+        <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
 
             <ListView.Header>
 
-                <Grid ColumnDefinitions="*, *, *, *, *, *">
+                <Grid ColumnDefinitions="*, *, *, *, *">
 
                     <Label Grid.Column="0" Text="ID"/>
                     <Label Grid.Column="1" Text="Descrição"/>
@@ -41,11 +41,11 @@
 
                         <ViewCell.ContextActions>
 
-                            <MenuItem Text="Remover"/>
+                            <MenuItem Text="Remover" Clicked="MenuItem_Clicked"/>
 
                         </ViewCell.ContextActions>
 
-                        <Grid ColumnDefinitions="*, *, *, *, *, *">
+                        <Grid ColumnDefinitions="*, *, *, *, *">
 
                             <Label Grid.Column="0" Text="{Binding Id}"/>
                             <Label Grid.Column="1" Text="{Binding Descricao}"/>
