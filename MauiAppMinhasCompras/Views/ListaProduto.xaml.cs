@@ -141,4 +141,71 @@ public partial class ListaProduto : ContentPage
 			lst_produtos.IsRefreshing = false;
 		}
     }
+
+    private async void ToolbarItem_Clicked_2(object sender, EventArgs e)
+    {
+		try
+		{
+			var produtos = await App.Db.GetAll();
+
+			var categorias = produtos
+				.Where(p => !string.IsNullOrEmpty(p.Categoria))
+				.Select(p => p.Categoria)
+				.Distinct()
+				.OrderBy(c => c)
+				.ToList();
+
+			categorias.Insert(0, "Todas");
+
+            string opcaoSelecionada = await DisplayActionSheet("Filtrar por Categoria", "Cancelar", null, categorias.ToArray());
+
+            if (opcaoSelecionada == "Cancelar" || string.IsNullOrWhiteSpace(opcaoSelecionada))
+                return;
+
+            if (opcaoSelecionada == "Todas")
+            {
+                lst_produtos.ItemsSource = produtos;
+            }
+            else
+            {
+                lst_produtos.ItemsSource = produtos.Where(p => p.Categoria == opcaoSelecionada).ToList();
+            }
+        }
+		catch (Exception ex)
+		{
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
+    }
+
+    private async void ToolbarItem_Clicked_3(object sender, EventArgs e)
+    {
+		try
+		{
+			var produtos = await App.Db.GetAll();
+
+			var relatorio = produtos
+				.Where(p => !string.IsNullOrEmpty(p.Categoria))
+				.GroupBy(p => p.Categoria)
+				.Select(g => new
+				{
+					Categoria = g.Key,
+					Total = g.Sum(p => p.Total)
+				}).ToList();
+
+			if (relatorio.Count == 0)
+			{
+				await DisplayAlert("Relatório", "Nenhum dado para exibir.", "Ok");
+				return;
+			}
+
+			string mensagem = string.Join("\n", relatorio.Select(r => $"{r.Categoria}: R$ {r.Total:F2}"));
+
+			await DisplayAlert("Gastos por Categoria", mensagem, "Ok");
+
+		}
+		catch (Exception ex)
+		{
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
+    }
 }
